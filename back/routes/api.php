@@ -20,6 +20,7 @@ Route::post('domains', 'DomainController@store');
 Route::put('domains', 'DomainController@update');
 
 Route::get('publishers', 'PublisherController@index');
+Route::get('publishers/{id}', 'PublisherController@show');
 Route::post('publishers', 'PublisherController@store');
-Route::put('publishers', 'PublisherController@update');
+Route::put('publishers/{id}', 'PublisherController@update');
 
