@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Publisher;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,6 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-         Publisher::factory(10)->create();
+         $this->call(PublisherSeeder::class);
+
+         $this->call(DomainSeeder::class);
     }
 }

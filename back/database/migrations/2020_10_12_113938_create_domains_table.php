@@ -15,7 +15,10 @@ class CreateDomainsTable extends Migration
     {
         Schema::create('domains', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->integer('publisher_id')->unsigned();
+            $table->string('name');
+            $table->boolean('ns_ads')->default(true);
+            $table->boolean('ns_app_ads')->default(true);
             $table->timestamps();
         });
     }

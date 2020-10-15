@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Domain;
 use App\Models\Entry;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
@@ -41,6 +42,10 @@ class PublisherController extends Controller
     public function show(Request $request)
     {
         $publisher = Publisher::find($request->id);
+
+        $publisher['domains'] = Domain::where('publisher_id', $request->id)
+            ->get()
+            ->toArray();
 
         $publisher['entries'] = Entry::where('publisher_id', $request->id)
             ->get()
