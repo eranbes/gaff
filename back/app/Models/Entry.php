@@ -10,4 +10,12 @@ class Entry extends Model
     use HasFactory;
 
     protected $table = 'entries';
+
+    protected $fillable = [
+        'name',
+        'is_app',
+        'publisher_id',
+        'domain_id',
+    ];
+
 }

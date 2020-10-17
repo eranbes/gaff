@@ -56,9 +56,10 @@ class PublisherController extends Controller
 
     public function update(Request $request)
     {
-        $id = $request->id;
+        $id = (int)$request->id;
         $name = $request->get('name');
         $entries = $request->get('entries') ?? [];
+        $domains = $request->get('domains') ?? [];
 
         Publisher::find($id)
             ->update(['name' => $name]);
@@ -70,12 +71,29 @@ class PublisherController extends Controller
 
         foreach ($entries as $e) {
 
-            $entry->name = $e['name'];
-            $entry->is_app = $e['is_app'];
-            $entry->publisher_id = $id;
-            $entry->domain_id = 0;
+            $entry->create([
+                'name' => $e['name'],
+                'is_app' => $e['is_app'],
+                'publisher_id' => $id,
+                'domain_id' => 0
+            ]);
 
-            $entry->save();
+        }
+
+        Domain::where(['publisher_id' => $id])
+            ->delete();
+
+        $domain = new Domain;
+
+        foreach ($domains as $d) {
+
+            $domain->create([
+                'name' => $d['name'],
+                'ns_ads' => $d['ns_ads'],
+                'ns_app_ads' => $d['ns_app_ads'],
+                'publisher_id' => $id,
+            ]);
+
         }
 
         return $this->show($request);

@@ -17,7 +17,7 @@ class CreateDomainsTable extends Migration
             $table->id();
             $table->integer('publisher_id')->unsigned();
             $table->string('name');
-            $table->boolean('ns_ads')->default(true);
+            $table->boolean('ns_ads')->default(false);
             $table->boolean('ns_app_ads')->default(true);
             $table->timestamps();
         });
