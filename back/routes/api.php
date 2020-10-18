@@ -23,3 +23,4 @@ Route::get('publishers/{id}', 'PublisherController@show');
 Route::post('publishers', 'PublisherController@store');
 Route::put('publishers/{id}', 'PublisherController@update');
 
+Route::get('crawl/{id}', 'CrawlController@run');

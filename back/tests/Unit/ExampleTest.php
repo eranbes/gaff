@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Http\Controllers\CrawlController;
 use PHPUnit\Framework\TestCase;
 
 class ExampleTest extends TestCase
@@ -13,6 +14,8 @@ class ExampleTest extends TestCase
      */
     public function testBasicTest()
     {
+        $this->crawlTest();
+
         $this->assertTrue(true);
     }
 }
