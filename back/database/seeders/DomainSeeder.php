@@ -10,22 +10,21 @@ class DomainSeeder extends Seeder
 {
     public function run()
     {
-        $pub_counter = Publisher::all()
-            ->count();
-
         $domains = new Domain;
 
         foreach ([
-                     'https://easybrain.com/',
-                     'https://www.etermax.com/',
-                     'https://www.forbes.com/',
-                     'https://gizmodo.com/',
-                     'https://www.vice.com/'
-                 ] as $name) {
+                     [1 =>'https://easybrain.com/'],
+                     [1 => 'https://www.etermax.com/'],
+                     [2 => 'https://www.forbes.com/'],
+                     [2 => 'https://www.mobpals.com'],
+                     [3 => 'https://www.cbs.com/'],
+                     [1 => 'https://gizmodo.com/'],
+                     [1 => 'https://www.vice.com/']
+                 ] as $p) {
 
             $domains->create([
-                'publisher_id' => random_int(1, $pub_counter),
-                'name' => $name
+                'publisher_id' => key($p),
+                'name' => current($p)
             ]);
 
         }
