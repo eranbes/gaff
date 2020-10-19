@@ -13,31 +13,35 @@ class CrawlController extends Controller
         $publisher = Publisher::find($publisher_id)->name;
 
         $domains = Domain::where('publisher_id', $publisher_id)
-            ->get('name')
+            ->get(['name', 'ns_ads', 'ns_app_ads'])
             ->toArray();
 
         foreach ($domains as $i => $d) {
 
-            try {
+            if ($d['ns_ads']) {
+                try {
 
-                $ads = file($d['name'] . 'ads.txt');
-                $domains[$i]['ads'] = true;
+                    $ads = file($d['name'] . 'ads.txt');
+                    $domains[$i]['ads'] = true;
 
-            } catch (\Exception $exception) {
+                } catch (\Exception $exception) {
 
-                $domains[$i]['ads'] = false;
+                    $domains[$i]['ads'] = false;
 
+                }
             }
 
-            try {
+            if ($d['ns_app_ads']) {
+                try {
 
-                $app_ads = file_get_contents($d['name'] . 'app-ads.txt');
-                $domains[$i]['app-ads'] = true;
+                    $app_ads = file_get_contents($d['name'] . 'app-ads.txt');
+                    $domains[$i]['app_ads'] = true;
 
-            } catch (\Exception $exception) {
+                } catch (\Exception $exception) {
 
-                $domains[$i]['app-ads'] = false;
+                    $domains[$i]['app_ads'] = false;
 
+                }
             }
 
         }

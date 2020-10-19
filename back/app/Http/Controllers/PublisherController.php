@@ -11,9 +11,16 @@ class PublisherController extends Controller
 {
     function index()
     {
-        $publishers = Publisher::all()
-//            ->get(['id', 'name']
+        $publishers = Publisher::get(['id', 'name'])
             ->toArray();
+
+        foreach ($publishers as $i => $p) {
+
+            $publishers[$i]['domains'] = Domain::where('publisher_id', $p['id'])
+                ->get()
+                ->toArray();
+
+        }
 
         return response($publishers, 200);
     }
