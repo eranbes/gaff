@@ -15,7 +15,6 @@ class CreateEntriesTable extends Migration
     {
         Schema::create('entries', function (Blueprint $table) {
             $table->id();
-            $table->integer('publisher_id')->unsigned();
             $table->integer('domain_id')->unsigned();
             $table->string('name');
             $table->boolean('is_app');

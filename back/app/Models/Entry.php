@@ -14,8 +14,10 @@ class Entry extends Model
     protected $fillable = [
         'name',
         'is_app',
-        'publisher_id',
         'domain_id',
     ];
 
+    protected $casts = [
+        'is_app' => 'boolean',
+    ];
 }

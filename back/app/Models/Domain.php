@@ -20,4 +20,9 @@ class Domain extends Model
         'ns_ads' => 'boolean',
         'ns_app_ads' => 'boolean',
     ];
+
+    public function entries()
+    {
+        return $this->hasMany('App\Models\Entry');
+    }
 }

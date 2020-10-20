@@ -12,4 +12,9 @@ class Publisher extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function domains()
+    {
+        return $this->hasMany('App\Models\Domain');
+    }
 }

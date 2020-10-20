@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('domains', 'DomainController@index');
-Route::post('domains', 'DomainController@store');
-Route::put('domains', 'DomainController@update');
-
 Route::get('publishers', 'PublisherController@index');
 Route::get('publishers/{id}', 'PublisherController@show');
 Route::post('publishers', 'PublisherController@store');
 Route::put('publishers/{id}', 'PublisherController@update');
+
+Route::get('domains', 'DomainController@index');
+Route::post('domains', 'DomainController@store');
+Route::put('domains', 'DomainController@update');
 
 Route::get('crawl/{id}', 'CrawlController@run');

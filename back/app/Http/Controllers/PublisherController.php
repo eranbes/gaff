@@ -11,16 +11,9 @@ class PublisherController extends Controller
 {
     function index()
     {
-        $publishers = Publisher::get(['id', 'name'])
+        $publishers = Publisher::with('domains')
+            ->get(['id', 'name'])
             ->toArray();
-
-        foreach ($publishers as $i => $p) {
-
-            $publishers[$i]['domains'] = Domain::where('publisher_id', $p['id'])
-                ->get()
-                ->toArray();
-
-        }
 
         return response($publishers, 200);
     }
@@ -33,28 +26,22 @@ class PublisherController extends Controller
 
         $publishers->name = $name;
 
-        if ($status = $publishers->save()) {
+        return $publishers->save()
 
-            return response(
-                Publisher::all()
-                    ->toArray(),
+            ? response(Publisher::with('domains')
+                ->get(['id', 'name'])
+                ->toArray(),
                 201
-            );
-
-        }
-
-        return response(null, 304);
+            )
+            : response(null, 304);
     }
 
     public function show(Request $request)
     {
         $publisher = Publisher::find($request->id);
 
-        $publisher['domains'] = Domain::where('publisher_id', $request->id)
-            ->get()
-            ->toArray();
-
-        $publisher['entries'] = Entry::where('publisher_id', $request->id)
+        $publisher['domains'] = Domain::with('entries')
+            ->where('publisher_id', $request->id)
             ->get()
             ->toArray();
 
@@ -71,36 +58,50 @@ class PublisherController extends Controller
         Publisher::find($id)
             ->update(['name' => $name]);
 
-        Entry::where(['publisher_id' => $id])
+        foreach ($domains as $d) {
+
+            $new_domain = [
+                'name' => $d['name'],
+                'ns_ads' => $d['ns_ads'],
+                'ns_app_ads' => $d['ns_app_ads'],
+                'publisher_id' => $id,
+            ];
+
+            $domain = Domain::where('id', $d['id'])
+                ->where('publisher_id', $d['publisher_id']);
+
+            if ($domain->get()->isEmpty()) {
+
+                $new_id = (new Domain)->create($new_domain)->id;
+
+                foreach ($entries as &$e) {
+
+                    if ($e['domain_id'] == $d['id']) {
+                        $e['domain_id'] = $new_id;
+                    }
+
+                }
+
+            } else {
+
+                $domain->update($new_domain);
+
+            }
+
+        }
+
+        Entry::where('publisher_id', $id)
             ->delete();
 
         $entry = new Entry;
 
         foreach ($entries as $e) {
-
             $entry->create([
                 'name' => $e['name'],
                 'is_app' => $e['is_app'],
                 'publisher_id' => $id,
-                'domain_id' => 0
+                'domain_id' => $e['domain_id']
             ]);
-
-        }
-
-        Domain::where(['publisher_id' => $id])
-            ->delete();
-
-        $domain = new Domain;
-
-        foreach ($domains as $d) {
-
-            $domain->create([
-                'name' => $d['name'],
-                'ns_ads' => $d['ns_ads'],
-                'ns_app_ads' => $d['ns_app_ads'],
-                'publisher_id' => $id,
-            ]);
-
         }
 
         return $this->show($request);
