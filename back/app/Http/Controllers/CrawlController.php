@@ -8,40 +8,49 @@ use Illuminate\Http\Request;
 
 class CrawlController extends Controller
 {
+    private function getContent($domain_name, $is_app)
+    {
+        if (substr($domain_name, -1) != '/') {
+            $domain_name .= '/';
+        }
+
+        $path = $is_app
+            ? 'app-ads.txt'
+            : 'ads.txt';
+
+        try {
+
+            $ads = file($domain_name . $path);
+            return true;
+
+        } catch (\Exception $exception) {
+
+            return false;
+
+        }
+    }
+
     public function run($publisher_id)
     {
         $publisher = Publisher::find($publisher_id)->name;
 
-        $domains = Domain::where('publisher_id', $publisher_id)
+        $domains = Domain::with('entries')
+            ->where('publisher_id', $publisher_id)
             ->get(['name', 'ns_ads', 'ns_app_ads'])
             ->toArray();
 
-        foreach ($domains as $i => $d) {
+        foreach ($domains as &$d) {
 
             if ($d['ns_ads']) {
-                try {
 
-                    $ads = file($d['name'] . 'ads.txt');
-                    $domains[$i]['ads'] = true;
+                $d['ads'] = $this->getContent($d['name'], false);
 
-                } catch (\Exception $exception) {
-
-                    $domains[$i]['ads'] = false;
-
-                }
             }
 
             if ($d['ns_app_ads']) {
-                try {
 
-                    $app_ads = file_get_contents($d['name'] . 'app-ads.txt');
-                    $domains[$i]['app_ads'] = true;
+                $d['app_ads'] = $this->getContent($d['name'], false);
 
-                } catch (\Exception $exception) {
-
-                    $domains[$i]['app_ads'] = false;
-
-                }
             }
 
         }

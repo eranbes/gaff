@@ -52,7 +52,6 @@ class PublisherController extends Controller
     {
         $id = (int)$request->id;
         $name = $request->get('name');
-        $entries = $request->get('entries') ?? [];
         $domains = $request->get('domains') ?? [];
 
         Publisher::find($id)
@@ -74,7 +73,7 @@ class PublisherController extends Controller
 
                 $new_id = (new Domain)->create($new_domain)->id;
 
-                foreach ($entries as &$e) {
+                foreach ($d['entries'] as &$e) {
 
                     if ($e['domain_id'] == $d['id']) {
                         $e['domain_id'] = $new_id;
@@ -88,20 +87,19 @@ class PublisherController extends Controller
 
             }
 
-        }
+            Entry::where('domain_id', $d['id'])
+                ->delete();
 
-        Entry::where('publisher_id', $id)
-            ->delete();
+            $entry = new Entry;
 
-        $entry = new Entry;
+            foreach ($d['entries'] as $e) {
+                $entry->create([
+                    'name' => $e['name'],
+                    'is_app' => $e['is_app'],
+                    'domain_id' => $e['domain_id']
+                ]);
+            }
 
-        foreach ($entries as $e) {
-            $entry->create([
-                'name' => $e['name'],
-                'is_app' => $e['is_app'],
-                'publisher_id' => $id,
-                'domain_id' => $e['domain_id']
-            ]);
         }
 
         return $this->show($request);
