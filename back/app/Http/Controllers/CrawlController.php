@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Crawl;
 use App\Models\Domain;
+use Illuminate\Http\Request;
 
 class CrawlController extends Controller
 {
@@ -128,6 +129,14 @@ class CrawlController extends Controller
             }
 
         }
+
+        return response($domains);
+    }
+
+    public function index()
+    {
+        $domains = Domain::get(['name', 'ns_ads', 'ns_app_ads'])
+            ->toArray();
 
         return response($domains);
     }
