@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Crawl;
 use App\Models\Domain;
+use App\Models\Entry;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
 
 class CrawlController extends Controller
 {
     /**
-     * @param $domain_name
+     * @param string $domain_name
      * @param bool $is_app
-     * @return array|false
+     * @param array $needle_entries
+     * @return array
      */
-    private function getContent($domain_name, bool $is_app)
+    private function getContent(string $domain_name, bool $is_app, array $needle_entries)
     {
         if (substr($domain_name, -1) != '/') {
             $domain_name .= '/';
@@ -39,38 +42,31 @@ class CrawlController extends Controller
 
             }
 
-            return $ads;
+            foreach ($needle_entries as &$n) {
 
-        } catch (\Exception $exception) {
+                if ($is_app != $n['is_app']) continue;
 
-            return false;
+                $n['is_available'] = false;
 
-        }
-    }
+                foreach ($ads as $a) {
 
-    private function compareEntries(array $needle, array $remote, bool $is_app)
-    {
-        foreach ($needle as &$n) {
+                    if (is_int(strripos($a, $n['name']))) $n['is_available'] = true;
 
-            if ($is_app != $n['is_app']) continue;
-
-            $n['status'] = 'N/A';
-
-            foreach ($remote as $r) {
-
-                if (is_int(strripos($r, $n['name']))) $n['status'] = 'Available';
+                }
 
             }
 
-        }
+            return [true, $needle_entries];
 
-        return $needle;
+        } catch (\Exception $exception) {
+
+            return [false, $needle_entries];
+
+        }
     }
 
     public function run($publisher_id)
     {
-        $publisher = Publisher::find($publisher_id)->name;
-
         $domains = Domain::with('entries')
             ->where('publisher_id', $publisher_id)
             ->get()
@@ -78,21 +74,57 @@ class CrawlController extends Controller
 
         foreach ($domains as &$d) {
 
-            if ($d['ns_ads']) {
+            if ($d['entries']) {
 
-                if ($d['ads'] = $this->getContent($d['name'], false)) {
+                if ($d['ns_ads']) {
 
-                    $d['entries'] = $this->compareEntries($d['entries'], $d['ads'], false);
+                    [$d['ads'], $d['entries']] = $this->getContent($d['name'], false, $d['entries']);
+
+                }
+
+                if ($d['ns_app_ads']) {
+
+                    [$d['app_ads'], $d['entries']] = $this->getContent($d['name'], true, $d['entries']);
 
                 }
 
             }
 
-            if ($d['ns_app_ads']) {
+            foreach ($d['entries'] as $e) {
 
-                if ($d['app_ads'] = $this->getContent($d['name'], false)) {
+                $e['is_available'] = (int)@$e['is_available'];
 
-                    $d['entries'] = $this->compareEntries($d['entries'], $d['app_ads'], true);
+                if ($crawl = Crawl::where('domain_id', $e['domain_id'])
+                    ->where('is_app', $e['is_app'])
+                    ->where('entry_name', $e['name'])
+                    ->orderBy('updated_at', 'desc')
+                    ->first()) {
+
+                    $prev_status = $crawl->status_id;
+
+                    // 0 - N/A, 1 - ADDED, 2 - DELETED
+
+                    // 0 + false = 0 - не обновлять
+                    // 0 + true = 1
+                    // 1 + false = 2
+                    // 1 + true = 1 - не обновлять
+                    // 2 + false = 2 - не обновлять
+                    // 2 + true = 1
+
+                    if ($prev_status == 2) $prev_status = 0;
+                    if ($prev_status == $e['is_available']) continue;
+
+                    $crawl->status_id = $prev_status + 1;
+                    $crawl->save();
+
+                } else {
+
+                    Crawl::create([
+                        'domain_id' => $e['domain_id'],
+                        'is_app' => $e['is_app'],
+                        'entry_name' => $e['name'],
+                        'status_id' => $e['is_available']
+                    ]);
 
                 }
 

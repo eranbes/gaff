@@ -14,13 +14,16 @@ class CreateCrawlsTable extends Migration
     public function up()
     {
 
-//        publisher name, domain name, assets name,
+// publisher name, domain name, assets name,
 // ads.txt entry, app-ads.txt entry,
 // date added, date status changed, current status,
+
         Schema::create('crawls', function (Blueprint $table) {
             $table->id();
             $table->integer('domain_id')->unsigned();
             $table->boolean('is_app');
+            $table->string('entry_name');
+            $table->integer('status_id')->unsigned();
             $table->timestamps();
         });
     }
