@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Crawl;
 use App\Models\Domain;
-use App\Models\Entry;
-use App\Models\Publisher;
-use Illuminate\Http\Request;
 
 class CrawlController extends Controller
 {
