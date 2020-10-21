@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Crawl;
 use App\Models\Domain;
+use App\Models\Publisher;
 use Illuminate\Http\Request;
 
 class CrawlController extends Controller
@@ -135,7 +136,47 @@ class CrawlController extends Controller
 
     public function index()
     {
-        $domains = Domain::get(['name', 'ns_ads', 'ns_app_ads'])
+        $publishers = Publisher::pluck('name', 'id')
+            ->toArray();
+
+        $domains = Domain::with('entries')
+            ->get()
+            ->map(function ($item) use ($publishers) {
+
+                $item['publisher'] = $publishers[$item['publisher_id']];
+
+                $item['ads'] = '';
+                $item['app_ads'] = '';
+
+                foreach ($item['entries'] as $e) {
+
+                    $entry = [
+                        'name' => $e->name,
+//                        'date_added' => substr($i['created_at'], 0, 10),
+//                        'date_changed' => substr($i['updated_at'], 0, 10),
+//                        'status_id' => '',
+                    ];
+
+                    if ($crawl = Crawl::where('domain_id', $e->domain_id)
+                        ->where('is_app', $e->is_app)
+                        ->where('entry_name', $e->name)
+                        ->orderBy('updated_at', 'desc')
+                        ->first()) {
+
+                        if ($e['is_app']) {
+//                        $item['app_ads'][] = $e;
+                        } else {
+//                        $item['ads'][] = $e;
+                        }
+
+                    } else {
+
+                    }
+
+                }
+
+                return $item;
+            })
             ->toArray();
 
         return response($domains);
