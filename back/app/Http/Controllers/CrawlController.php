@@ -141,43 +141,34 @@ class CrawlController extends Controller
 
         $domains = Domain::with('entries')
             ->get()
-            ->map(function ($item) use ($publishers) {
+            ->toArray();
 
-                $item['publisher'] = $publishers[$item['publisher_id']];
+        foreach ($domains as &$d) {
 
-                $item['ads'] = '';
-                $item['app_ads'] = '';
+            $d['publisher'] = $publishers[$d['publisher_id']];
 
-                foreach ($item['entries'] as $e) {
+            $d['ads'] = $d['app_ads'] = [];
 
-                    $entry = [
-                        'name' => $e->name,
-//                        'date_added' => substr($i['created_at'], 0, 10),
-//                        'date_changed' => substr($i['updated_at'], 0, 10),
-//                        'status_id' => '',
-                    ];
+            foreach ($d['entries'] as $e) {
 
-                    if ($crawl = Crawl::where('domain_id', $e->domain_id)
-                        ->where('is_app', $e->is_app)
-                        ->where('entry_name', $e->name)
-                        ->orderBy('updated_at', 'desc')
-                        ->first()) {
+                if ($crawl = Crawl::where('domain_id', $e['domain_id'])
+                    ->where('is_app', $e['is_app'])
+                    ->where('entry_name', $e['name'])
+                    ->orderBy('updated_at', 'desc')
+                    ->first()
+                    ->toArray()) {
 
-                        if ($e['is_app']) {
-//                        $item['app_ads'][] = $e;
-                        } else {
-//                        $item['ads'][] = $e;
-                        }
-
+                    if ($e['is_app']) {
+                        $d['app_ads'][] = $crawl;
                     } else {
-
+                        $d['ads'][] = $crawl;
                     }
 
                 }
 
-                return $item;
-            })
-            ->toArray();
+            }
+
+        }
 
         return response($domains);
     }
