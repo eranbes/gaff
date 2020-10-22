@@ -157,8 +157,9 @@ class CrawlController extends Controller
                     ->where('is_app', $e['is_app'])
                     ->where('entry_name', $e['name'])
                     ->orderBy('updated_at', 'desc')
-                    ->first()
-                    ->toArray()) {
+                    ->first()) {
+
+                    $crawl = $crawl->toArray();
 
                     $crawl['created_at'] = substr($crawl['created_at'], 0, 10);
                     $crawl['updated_at'] = substr($crawl['updated_at'], 0, 10);
