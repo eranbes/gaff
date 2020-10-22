@@ -25,3 +25,5 @@ Route::put('domains', 'DomainController@update');
 
 Route::get('crawls', 'CrawlController@index');
 Route::patch('crawls/{id}', 'CrawlController@run');
+
+Route::get('send', 'DailyController@run');
