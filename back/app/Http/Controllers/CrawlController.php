@@ -147,6 +147,8 @@ class CrawlController extends Controller
 
             $d['publisher'] = $publishers[$d['publisher_id']];
 
+            $d['asset'] = 'asset';
+
             $d['ads'] = $d['app_ads'] = [];
 
             foreach ($d['entries'] as $e) {
@@ -157,6 +159,9 @@ class CrawlController extends Controller
                     ->orderBy('updated_at', 'desc')
                     ->first()
                     ->toArray()) {
+
+                    $crawl['created_at'] = substr($crawl['created_at'], 0, 10);
+                    $crawl['updated_at'] = substr($crawl['updated_at'], 0, 10);
 
                     if ($e['is_app']) {
                         $d['app_ads'][] = $crawl;
