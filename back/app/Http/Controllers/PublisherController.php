@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asset;
 use App\Models\Domain;
 use App\Models\Entry;
 use App\Models\Publisher;
@@ -81,6 +82,14 @@ class PublisherController extends Controller
 
                 }
 
+                foreach ($d['assets'] as &$a) {
+
+                    if ($a['domain_id'] == $d['id']) {
+                        $a['domain_id'] = $new_id;
+                    }
+
+                }
+
             } else {
 
                 $domain->update($new_domain);
@@ -97,6 +106,19 @@ class PublisherController extends Controller
                     'name' => $e['name'],
                     'is_app' => $e['is_app'],
                     'domain_id' => $e['domain_id']
+                ]);
+            }
+
+            Asset::where('domain_id', $d['id'])
+                ->delete();
+
+            $asset = new Asset;
+
+            foreach ($d['assets'] as $a) {
+                $asset->create([
+                    'asset_name' => $a['asset_name'],
+                    'asset_id' => $a['asset_id'],
+                    'domain_id' => $a['domain_id']
                 ]);
             }
 
