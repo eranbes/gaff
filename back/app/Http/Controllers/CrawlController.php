@@ -66,7 +66,7 @@ class CrawlController extends Controller
 
     public function run($publisher_id)
     {
-        $domains = Domain::with('entries')
+        $domains = Domain::with(['entries', 'assets'])
             ->where('publisher_id', $publisher_id)
             ->get()
             ->toArray();
@@ -139,15 +139,13 @@ class CrawlController extends Controller
         $publishers = Publisher::pluck('name', 'id')
             ->toArray();
 
-        $domains = Domain::with('entries')
+        $domains = Domain::with(['entries', 'assets'])
             ->get()
             ->toArray();
 
         foreach ($domains as &$d) {
 
             $d['publisher'] = $publishers[$d['publisher_id']];
-
-            $d['asset'] = 'asset';
 
             $d['ads'] = $d['app_ads'] = [];
 

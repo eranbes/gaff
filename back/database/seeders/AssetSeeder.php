@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Domain;
+use App\Models\Asset;
 use Illuminate\Database\Seeder;
 
 class AssetSeeder extends Seeder

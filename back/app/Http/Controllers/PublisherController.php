@@ -40,7 +40,7 @@ class PublisherController extends Controller
     {
         $publisher = Publisher::find($request->id);
 
-        $publisher['domains'] = Domain::with('entries')
+        $publisher['domains'] = Domain::with(['entries', 'assets'])
             ->where('publisher_id', $request->id)
             ->get()
             ->toArray();

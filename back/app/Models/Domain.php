@@ -25,4 +25,9 @@ class Domain extends Model
     {
         return $this->hasMany('App\Models\Entry');
     }
+
+    public function assets()
+    {
+        return $this->hasMany('App\Models\Asset');
+    }
 }

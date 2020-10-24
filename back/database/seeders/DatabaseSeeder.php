@@ -18,5 +18,7 @@ class DatabaseSeeder extends Seeder
          $this->call(DomainSeeder::class);
 
          $this->call(EntrySeeder::class);
+
+         $this->call(AssetSeeder::class);
     }
 }
