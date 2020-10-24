@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDomainsTable extends Migration
+class CreateAssetsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateDomainsTable extends Migration
      */
     public function up()
     {
-        Schema::create('domains', function (Blueprint $table) {
+        Schema::create('assets', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('publisher_id');
-            $table->string('name');
-            $table->boolean('ns_ads')->default(false);
-            $table->boolean('ns_app_ads')->default(true);
+            $table->unsignedInteger('domain_id');
+            $table->string('asset_name');
+            $table->string('asset_id');
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ class CreateDomainsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('domains');
+        Schema::dropIfExists('assets');
     }
 }
