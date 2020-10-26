@@ -11,14 +11,16 @@ class StatusChanged extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $report;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($report)
     {
-        //
+        $this->report = $report;
     }
 
     /**
@@ -28,8 +30,11 @@ class StatusChanged extends Mailable
      */
     public function build()
     {
-        return $this->subject('Test from gaff')
+        $report = $this->report;
+
+        return $this->subject('Modified entries report')
             ->from('test@gaff.com')
-            ->view('statuschanged');
+            ->view('statuschanged')
+            ->with('report');
     }
 }
