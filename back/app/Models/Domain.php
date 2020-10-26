@@ -21,6 +21,11 @@ class Domain extends Model
         'ns_app_ads' => 'boolean',
     ];
 
+    public function publisher()
+    {
+        return $this->belongsTo('App\Models\Publisher');
+    }
+
     public function entries()
     {
         return $this->hasMany('App\Models\Entry');
