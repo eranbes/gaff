@@ -16,13 +16,13 @@ class DailyController extends Controller
     {
         $publishers = Publisher::pluck('id');
 
-//        $crawl = new CrawlController;
-//
-//        foreach ($publishers as $p) {
-//
-//            $crawl->run($p);
-//
-//        }
+        $crawl = new CrawlController;
+
+        foreach ($publishers as $p) {
+
+            $crawl->run($p);
+
+        }
 
         $domains = [];
 
