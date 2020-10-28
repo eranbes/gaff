@@ -133,6 +133,7 @@ class CrawlController extends Controller
 
         return response($domains);
     }
+
     public function index()
     {
         $publishers = Publisher::pluck('name', 'id')

@@ -32,8 +32,8 @@ class StatusChanged extends Mailable
     {
         $report = $this->report;
 
-        return $this->subject('Modified entries report')
-            ->from('test@gaff.com')
+        return $this->subject('Daily report')
+            ->from('app@gaff.com')
             ->view('statuschanged')
             ->with('report');
     }

@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Http\Controllers\DailyController;
 use App\Mail\StatusChanged;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -26,11 +27,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {
+        $schedule->call(function() {
 
-            Mail::to('samsonin@mail.ru')->send(new StatusChanged);
+            (new DailyController)->run();
 
-        })->everyFiveMinutes();
+        })->dailyAt('04:00');
     }
 
     /**
