@@ -29,9 +29,15 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function() {
 
+            (new DailyController)->scan();
+
+        })->dailyAt('8:00');
+
+        $schedule->call(function() {
+
             (new DailyController)->run();
 
-        })->dailyAt('04:00');
+        })->dailyAt('9:00');
     }
 
     /**

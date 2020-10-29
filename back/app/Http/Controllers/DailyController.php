@@ -11,22 +11,36 @@ use Illuminate\Support\Facades\Mail;
 
 class DailyController extends Controller
 {
+    public function scan()
+    {
+        $publishers = Publisher::pluck('id');
+
+        $crawl = new CrawlController;
+
+        foreach ($publishers as $p) {
+
+            $crawl->run($p);
+
+        }
+
+        return true;
+    }
+
     public function run()
     {
         $publishers = Publisher::pluck('id');
 
-//        $crawl = new CrawlController;
-//
-//        foreach ($publishers as $p) {
-//
-//            $crawl->run($p);
-//
-//        }
+        $crawl = new CrawlController;
+
+        foreach ($publishers as $p) {
+
+            $crawl->run($p);
+
+        }
 
         $d_ids = [];
 
-        $changed_entries = Crawl::whereDate('updated_at', Carbon::yesterday())
-//        $changed_entries = Crawl::whereDate('updated_at', Carbon::today())
+        $changed_entries = Crawl::whereDate('updated_at', Carbon::today())
             ->orderBy('status_id')
             ->get()
             ->toArray();
@@ -81,21 +95,6 @@ class DailyController extends Controller
 
         }
 
-        return response($report);
+        return true;
     }
 }
-
-// a.	Entries added
-// i.	Publisher name
-// ii.	Entries added for app-ads.txt and ads.txt
-// iii.	Bundle ids associated with the entries added
-//
-// b.	Entries Deleted
-// i.	Publisher name
-// ii.	Entries deleted from app-ads.txt and ads.txt
-// iii.	Bundle ids associated with the entries deleted
-//
-// c.	Entries Unavailable
-// i.	Publisher name
-// ii.	Entries Unavailable from app-ads.txt and ads.txt
-// iii.	Bundle ids associated with the entries unavailable
