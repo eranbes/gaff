@@ -40,7 +40,7 @@ class DailyController extends Controller
 
         $d_ids = [];
 
-        $changed_entries = Crawl::whereDate('updated_at', Carbon::today())
+        $changed_entries = Crawl::whereDate('updated_at', '>', Carbon::now()->subHour())
             ->orderBy('status_id')
             ->get()
             ->toArray();

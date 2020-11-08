@@ -3,7 +3,7 @@
 namespace App\Console;
 
 use App\Http\Controllers\DailyController;
-use App\Mail\StatusChanged;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Mail;
@@ -27,17 +27,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function() {
+        $schedule->call(function () {
 
-            (new DailyController)->scan();
+            $time = substr(Carbon::now(), -5, 2);
 
-        })->dailyAt('8:00');
+            if ($time == '00') (new DailyController)->scan();
 
-        $schedule->call(function() {
+            if ($time == '15') (new DailyController)->run();
 
-            (new DailyController)->run();
-
-        })->dailyAt('9:00');
+        })->everyMinute();
     }
 
     /**
